@@ -1,4 +1,4 @@
-# Sistema ENSINA LOJA
+# Sistema LOJA
 
 ## Descrição
 
