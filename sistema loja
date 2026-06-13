@@ -1,0 +1,250 @@
+# @title
+!pip install mysql-connector-python
+
+
+import mysql.connector  # importa a conexão com MySQL
+from mysql.connector import Error
+
+
+"""Estabelece a conexão com o banco de dados MySQL."""
+def connect_to_database():
+    try:
+        connection = mysql.connector.connect(
+            host='db4free.net',
+            database='aprendizadosql',   # nome do seu banco de dados
+            user='profdurval',           # nome de usuário do DB4Free
+            password='unisandurval'      # senha do DB4Free
+        )
+        if connection.is_connected():
+            print("Conexão estabelecida com sucesso!")
+            return connection
+    except Error as e:
+        print(f"Erro ao conectar ao MySQL: {e}")
+        return None
+
+
+"""Executa um SELECT na tabela especificada."""
+def execute_select_query(connection, table_name):
+    try:
+        cursor = connection.cursor()
+        query = f"SELECT * FROM {table_name};"
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+
+        if result:
+            print(f"Dados da tabela {table_name}:")
+            for row in result:
+                print(row)
+        else:
+            print(f"Nenhum dado encontrado na tabela {table_name}.")
+    except Error as e:
+        print(f"Erro ao executar a consulta: {e}")
+
+
+"""Insere um novo cliente no banco de dados."""
+def inserir_cliente(connection):
+    try:
+        cursor = connection.cursor()
+        nome = input("Digite o nome do cliente: ")
+        email = input("Digite o email do cliente: ")
+        endereco = input("Digite o endereço do cliente: ")
+
+
+        query = "INSERT INTO Clientes (Nome, Email, Endereço) VALUES (%s, %s, %s)"
+        cursor.execute(query, (nome, email, endereco))
+        connection.commit()
+        print("Cliente inserido com sucesso!")
+    except Error as e:
+        print(f"Erro ao inserir cliente: {e}")
+
+
+"""Edita um cliente existente no banco de dados."""
+def editar_cliente(connection):
+    try:
+        cursor = connection.cursor()
+        cliente_id = input("Digite o ID do cliente a ser editado: ")
+        nome = input("Digite o novo nome do cliente: ")
+        email = input("Digite o novo email do cliente: ")
+        endereco = input("Digite o novo endereço do cliente: ")
+
+
+        query = "UPDATE Clientes SET Nome=%s, Email=%s, Endereço=%s WHERE ClienteID=%s"
+        cursor.execute(query, (nome, email, endereco, cliente_id))
+        connection.commit()
+        print("Cliente atualizado com sucesso!")
+    except Error as e:
+        print(f"Erro ao editar cliente: {e}")
+
+
+"""Exclui um cliente do banco de dados."""
+def excluir_cliente(connection):
+    try:
+        cursor = connection.cursor()
+        cliente_id = input("Digite o ID do cliente a ser excluído: ")
+
+
+        query = "DELETE FROM Clientes WHERE ClienteID=%s"
+        cursor.execute(query, (cliente_id,))
+        connection.commit()
+        print("Cliente excluído com sucesso!")
+    except Error as e:
+        print(f"Erro ao excluir cliente: {e}")
+
+
+"""Insere um novo produto no banco de dados."""
+def inserir_produto(connection):
+    try:
+        cursor = connection.cursor()
+        nome = input("Digite o nome do produto: ")
+        descricao = input("Digite a descrição do produto: ")
+        preco = input("Digite o preço do produto: ")
+
+
+        query = "INSERT INTO Produtos (Nome, Descrição, Preço) VALUES (%s, %s, %s)"
+        cursor.execute(query, (nome, descricao, preco))
+        connection.commit()
+        print("Produto inserido com sucesso!")
+    except Error as e:
+        print(f"Erro ao inserir produto: {e}")
+
+
+"""Edita um produto existente no banco de dados."""
+def editar_produto(connection):
+    try:
+        cursor = connection.cursor()
+        produto_id = input("Digite o ID do produto a ser editado: ")
+        nome = input("Digite o novo nome do produto: ")
+        descricao = input("Digite a nova descrição do produto: ")
+        preco = input("Digite o novo preço do produto: ")
+
+
+        query = "UPDATE Produtos SET Nome=%s, Descrição=%s, Preço=%s WHERE ProdutoID=%s"
+        cursor.execute(query, (nome, descricao, preco, produto_id))
+        connection.commit()
+        print("Produto atualizado com sucesso!")
+    except Error as e:
+        print(f"Erro ao editar produto: {e}")
+
+
+"""Exclui um produto do banco de dados."""
+def excluir_produto(connection):
+    try:
+        cursor = connection.cursor()
+        produto_id = input("Digite o ID do produto a ser excluído: ")
+        query = "DELETE FROM Produtos WHERE ProdutoID=%s"
+        cursor.execute(query, (produto_id,))
+        connection.commit()
+        print("Produto excluído com sucesso!")
+    except Error as e:
+        print(f"Erro ao excluir produto: {e}")
+
+
+"""Exibe o menu de ações de clientes."""
+def exibir_menu_clientes():
+    print("\nMenu de Clientes:")
+    print("1. Exibir dados dos clientes")
+    print("2. Inserir novo cliente")
+    print("3. Editar cliente existente")
+    print("4. Excluir cliente")
+    print("5. Voltar ao menu principal")
+    return input("Escolha uma opção: ").strip()
+
+
+"""Exibe o menu de ações de produtos."""
+def exibir_menu_produtos():
+    print("\nMenu de Produtos:")
+    print("1. Exibir dados dos produtos")
+    print("2. Inserir novo produto")
+    print("3. Editar produto existente")
+    print("4. Excluir produto")
+    print("5. Voltar ao menu principal")
+    return input("Escolha uma opção: ").strip()
+
+
+"""Exibe o menu principal e retorna a escolha do usuário."""
+def exibir_menu():
+    print("\nMenu Principal:")
+    print("1. Ações em Clientes")
+    print("2. Ações em Produtos")
+    print("3. Exibir dados da tabela Inventário")
+    print("4. Exibir dados da tabela ItensPedido")
+    print("5. Exibir dados da tabela Pedidos")
+    print("6. Finalizar")
+    return input("Escolha uma opção: ").strip()
+
+
+"""Função para o menu de ações em Clientes."""
+def menu_clientes(connection):
+    while True:
+        choice = exibir_menu_clientes()
+        if choice == '1':
+            execute_select_query(connection, "Clientes")
+        elif choice == '2':
+            inserir_cliente(connection)
+        elif choice == '3':
+            editar_cliente(connection)
+        elif choice == '4':
+            excluir_cliente(connection)
+        elif choice == '5':
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+
+"""Função para o menu de ações em Produtos."""
+def menu_produtos(connection):
+    while True:
+        choice = exibir_menu_produtos()
+        if choice == '1':
+            execute_select_query(connection, "Produtos")
+        elif choice == '2':
+            inserir_produto(connection)
+        elif choice == '3':
+            editar_produto(connection)
+        elif choice == '4':
+            excluir_produto(connection)
+        elif choice == '5':
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+
+def main_menu():
+    print("*** SISTEMA ENSINA LOJA ***")
+    connection = connect_to_database()
+    if not connection:
+        return
+    while True:
+        # Chama a função que exibe o menu e captura a escolha
+        choice = exibir_menu()
+        if choice == '1':
+            menu_clientes(connection)
+        elif choice == '2':
+            menu_produtos(connection)
+        elif choice == '3':
+            execute_select_query(connection, "Inventário")
+        elif choice == '4':
+            execute_select_query(connection, "ItensPedido")
+        elif choice == '5':
+            execute_select_query(connection, "Pedidos")
+        elif choice == '6' or choice.lower() == 'f':
+            print("Finalizando...")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+
+    if connection.is_connected():
+        connection.close()
+        print("Conexão ao MySQL foi fechada")
+
+
+if __name__ == "__main__":
+    main_menu()
+
+
+
+
+
+
